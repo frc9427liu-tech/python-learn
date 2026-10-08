@@ -33,6 +33,9 @@ nav.chips{display:flex;gap:8px;overflow-x:auto;padding-block:10px 2px;scrollbar-
 nav.chips::-webkit-scrollbar{display:none}
 nav.chips a{flex:0 0 auto;font-size:13px;color:var(--fg);text-decoration:none;border:1px solid var(--line);padding:4px 12px;border-radius:999px;background:var(--surface)}
 nav.chips a.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.lessons{display:flex;gap:8px;margin-top:8px}
+.lessons button{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 14px;min-height:40px;cursor:pointer}
+.lessons button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:700}
 .intro{padding-block:20px 4px;color:var(--muted);font-size:15px}
 section.sec{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 16px;margin-top:16px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 96px)}
 section.sec h2{font-size:20px;margin:0 0 8px;line-height:1.4;text-wrap:balance}
@@ -65,7 +68,8 @@ html{-webkit-text-size-adjust:100%}body{padding-top:env(safe-area-inset-top,0px)
 
 <div class="wrap">
   <header class="top">
-    <h1><span>Python 第 1 課</span><span class="count" id="count">0 / 0</span></h1>
+    <h1><span id="title">Python 第 1 課</span><span class="count" id="count">0 / 0</span></h1>
+    <div class="lessons" id="lessons"></div>
     <div class="bar"><i id="barfill"></i></div>
     <nav class="chips" id="chips" aria-label="章節"></nav>
   </header>
@@ -118,14 +122,59 @@ const LESSONS=[{
    code:'r = int(input())\narea = 3.14 * r * r\nprint(area)',out:'(輸入 2)→ 12.56',
    why:'任何程式都是這三步:<b>讀入 → 處理 → 輸出</b>。先想步驟,再寫程式。',
    qs:[{id:'q6a',stem:'輸入兩個整數 a、b,要輸出平均數,最後一行該怎麼寫?',code:'a, b = map(int, input().split())\n# 這裡?',opts:['print(a + b / 2)','print((a + b) / 2)','print((a + b) // 2.0)','print(a + b) / 2'],ans:1,exp:'要先加再除,所以加法要用括號:(a + b) / 2。a + b / 2 會先算 b / 2。'}]}
+ ]},{
+ id:'L2',title:'第 2 課',
+ sections:[
+  {id:'t1',name:'if',h:'if:讓程式做選擇',
+   text:'<p>先用比較運算得到 <code class="i">True</code> 或 <code class="i">False</code>:<code class="i">==</code>(等於)、<code class="i">!=</code>(不等於)、<code class="i">&gt;</code> <code class="i">&lt;</code> <code class="i">&gt;=</code> <code class="i">&lt;=</code>。注意:判斷「等於」是兩個等號,一個等號是放進盒子。</p><p><code class="i">if</code> 後面接條件和冒號,<b>要做的事縮排 4 個空白</b>。縮排就是 Python 的「大括號」。</p>',
+   code:'score = 75\nif score >= 90:\n    print("A")\nelif score >= 60:\n    print("及格")\nelse:\n    print("不及格")',out:'及格',
+   why:'由上往下檢查,<b>第一個成立的就執行,後面全部跳過</b>。75 不是 ≥ 90,所以看 elif,≥ 60 成立,印「及格」就結束。',
+   qs:[
+    {id:'r1a',stem:'這段會輸出什麼?',code:'x = 10\nif x > 5:\n    print("A")\nelif x > 8:\n    print("B")\nelse:\n    print("C")',opts:['A','B','A 和 B','C'],ans:0,exp:'x > 5 先成立,印 A,後面的 elif 不會再檢查,所以不會印 B。'},
+    {id:'r1b',stem:'要判斷 n 是不是偶數,條件怎麼寫?',opts:['n / 2 == 0','n % 2 = 0','n % 2 == 0','n // 2 == 0'],ans:2,exp:'偶數除以 2 餘 0,所以 n % 2 == 0。單一個 = 是放進盒子,會出錯。'}]},
+  {id:'t2',name:'and/or',h:'and / or / not:組合條件',
+   text:'<p><code class="i">and</code>:兩個都成立才成立。<code class="i">or</code>:只要一個成立就成立。<code class="i">not</code>:反過來。</p><p>Python 可以連著寫範圍:<code class="i">10 &lt;= x &lt;= 20</code>。</p>',
+   code:'age = 16\nprint(age >= 13 and age <= 18)\nprint(age < 10 or age > 60)\nprint(not (age == 16))',out:'True\nFalse\nFalse',
+   why:'<code class="i">and</code> 優先於 <code class="i">or</code>。不確定就加括號,比較不會錯。',
+   qs:[
+    {id:'r2a',stem:'<code class="i">n = 12</code>,<code class="i">n % 3 == 0 and n % 4 == 0</code> 的結果?',opts:['True','False','12','會出錯'],ans:0,exp:'12 % 3 = 0 且 12 % 4 = 0,兩個都成立,所以 True。'},
+    {id:'r2b',stem:'<code class="i">not (3 > 5 or 2 > 1)</code> 的結果?',opts:['True','False','3','會出錯'],ans:1,exp:'括號內:3 > 5 是 False,2 > 1 是 True,False or True = True;not True = False。'}]},
+  {id:'t3',name:'for',h:'for:重複做事',
+   text:'<p><code class="i">for i in range(n)</code>:i 依序取 0、1、…、n-1,<b>不含 n</b>。縮排裡的事每次都做一遍。</p><p><code class="i">range(a, b)</code> 從 a 到 b-1;<code class="i">range(a, b, k)</code> 每次加 k。</p>',
+   code:'for i in range(3):\n    print(i)\nfor i in range(1, 6, 2):\n    print(i)',out:'0\n1\n2\n1\n3\n5',
+   why:'最常見的錯:以為 <code class="i">range(5)</code> 會到 5。其實是 0~4。要 1 到 n 就寫 <code class="i">range(1, n + 1)</code>。',
+   qs:[
+    {id:'r3a',stem:'這段會輸出什麼?',code:'total = 0\nfor i in range(1, 5):\n    total = total + i\nprint(total)',opts:['10','15','6','4'],ans:0,exp:'i 取 1、2、3、4(不含 5),加總 = 10。'},
+    {id:'r3b',stem:'要印出 1 到 n(含 n),該用哪個?',opts:['range(n)','range(1, n)','range(1, n + 1)','range(0, n + 1)'],ans:2,exp:'range 不含結尾,所以結尾要寫 n + 1。'}]},
+  {id:'t4',name:'list',h:'list:一排盒子',
+   text:'<p>list 是<b>一排有編號的盒子</b>,編號(索引)從 0 開始。用 <code class="i">[ ]</code> 建立,<code class="i">len(a)</code> 是長度,<code class="i">a.append(x)</code> 在最後加一個。</p>',
+   code:'a = [10, 20, 30]\nprint(a[0], a[2])\nprint(a[-1])\na.append(40)\nprint(len(a))\na[1] = 99\nprint(a)',out:'10 30\n30\n4\n[10, 99, 30, 40]',
+   why:'<code class="i">a[-1]</code> 是最後一個。索引超過範圍(例如長度 3 取 a[3])會出錯。',
+   qs:[
+    {id:'r4a',stem:'<code class="i">a = [5, 6, 7, 8]</code>,<code class="i">a[1] + a[3]</code> 是多少?',opts:['13','14','11','15'],ans:1,exp:'a[1] 是 6,a[3] 是 8(從 0 開始數),相加 14。'},
+    {id:'r4b',stem:'執行完 <code class="i">a = [1, 2]; a.append(3); a.append(4)</code>,<code class="i">len(a)</code> 是?',opts:['2','3','4','5'],ans:2,exp:'原本 2 個,加了 2 個,長度 4。'}]},
+  {id:'t5',name:'for+list',h:'for 走訪 list:加總與最大值',
+   text:'<p><code class="i">for x in a</code> 會把 list 的每個值依序給 x。常見用法:加總、找最大值、計數。</p>',
+   code:'a = [3, 8, 2, 8, 5]\ntotal = 0\nbig = a[0]\nfor x in a:\n    total = total + x\n    if x > big:\n        big = x\nprint(total, big)',out:'26 8',
+   why:'找最大值的模式:先假設第一個最大,逐個比較,更大就換掉。「先設初值,再走訪更新」是 APCS 題最常見的結構。',
+   qs:[
+    {id:'r5a',stem:'這段會輸出什麼?',code:'a = [4, 7, 1, 6]\ncount = 0\nfor x in a:\n    if x > 3:\n        count = count + 1\nprint(count)',opts:['2','3','4','1'],ans:1,exp:'大於 3 的有 4、7、6,共 3 個。1 不算。'},
+    {id:'r5b',stem:'這段會輸出什麼?',code:'a = [2, 5, 3]\ns = 0\nfor i in range(len(a)):\n    s = s + a[i] * i\nprint(s)',opts:['10','11','13','21'],ans:1,exp:'i=0:2*0=0;i=1:5*1=5;i=2:3*2=6;總和 11。'}]},
+  {id:'t6',name:'小程式',h:'串起來:1 到 n 的偶數和',
+   text:'<p>題目:輸入整數 n,輸出 1 到 n 中所有偶數的總和。</p><p>想法:用 for 走 1~n → 用 if 判斷偶數 → 累加 → 最後輸出。</p>',
+   code:'n = int(input())\ntotal = 0\nfor i in range(1, n + 1):\n    if i % 2 == 0:\n        total = total + i\nprint(total)',out:'(輸入 10)→ 30',
+   why:'迴圈 + 判斷 + 累加,第 2 課三個重點合在一起。輸入 10:2+4+6+8+10 = 30。',
+   qs:[{id:'r6a',stem:'要改成「1 到 n 中 3 的倍數的個數」,該改哪兩處?',code:'n = int(input())\ntotal = 0\nfor i in range(1, n + 1):\n    if i % 2 == 0:\n        total = total + i\nprint(total)',opts:['if 改成 i % 3 == 0,total + i 改成 total + 1','只改 range','if 改成 i // 3,total 不變','把 print 移到迴圈裡'],ans:0,exp:'條件換成 3 的倍數(i % 3 == 0),而「個數」是每次加 1,不是加 i。'}]}
  ]}];
 
-const L=LESSONS[0];
+let cur=0;try{cur=Math.min(LESSONS.length-1,Math.max(0,parseInt(localStorage.getItem('pylearn-cur')||'0')||0))}catch(e){}
+let L=LESSONS[cur];
 const KEY='pylearn-v1';
 let done={};
 try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){done={}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}}
-const allQs=L.sections.flatMap(s=>s.qs);
+let allQs=L.sections.flatMap(s=>s.qs);
+function setLesson(i){cur=i;L=LESSONS[i];allQs=L.sections.flatMap(s=>s.qs);try{localStorage.setItem('pylearn-cur',String(i))}catch(e){}render();window.scrollTo(0,0)}
 function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
 function pre(txt,cls){const p=el('pre',cls);p.textContent=txt;return p}
 
@@ -137,7 +186,9 @@ function update(){
   document.querySelectorAll('#chips a').forEach((a,i)=>a.classList.toggle('done',secDone(L.sections[i])));
   const f=document.getElementById('finish');
   f.innerHTML='';
-  if(n===allQs.length){f.appendChild(el('div','done-banner','第 1 課全部答對。下一步:回 Discord 跟 Claude 說「第 1 課完成」,繼續第 2 課(if / for / list)。'))}
+  document.getElementById('title').textContent='Python '+L.title;
+  document.querySelectorAll('#lessons button').forEach((b,i)=>b.classList.toggle('on',i===cur));
+  if(n===allQs.length){f.appendChild(el('div','done-banner',L.title+'全部答對。'+(cur<LESSONS.length-1?'可以切到下一課。':'下一課還在準備中,回 Discord 跟 Claude 說一聲。')))}
 }
 
 function renderQ(q,box){
@@ -166,6 +217,8 @@ function renderQ(q,box){
 function render(){
   const main=document.getElementById('main'),chips=document.getElementById('chips');
   main.innerHTML='';chips.innerHTML='';
+  const ls=document.getElementById('lessons');ls.innerHTML='';
+  LESSONS.forEach((x,i)=>{const b=el('button',null,x.title);b.type='button';b.addEventListener('click',()=>setLesson(i));ls.appendChild(b)});
   L.sections.forEach((s,i)=>{
     const a=el('a',null,(i+1)+' '+s.name);a.href='#'+s.id;
     a.addEventListener('click',e=>{e.preventDefault();document.getElementById(s.id).scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})});
