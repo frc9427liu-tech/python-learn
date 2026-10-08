@@ -1,0 +1,189 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#0b6b5f"><meta name="color-scheme" content="light dark">
+<title>Python 手機課</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面:單欄手機閱讀。頂部進度,一節一張卡,節內依序「講解 → 範例 → 小測驗」 */
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --fg:#1d2127; --muted:#5d6672; --line:#dcdad3;
+  --accent:#0b6b5f; --accent-fg:#ffffff; --accent-soft:#dff0ec;
+  --code-bg:#1b2229; --code-fg:#e8edf1; --out-bg:#e9efe9; --out-fg:#1d2127;
+  --ok:#17794a; --ok-soft:#dcf1e5; --bad:#b3372c; --bad-soft:#f7e0dd;
+  --font-body:'Noto Sans TC',system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  --font-code:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171b; --surface:#1a2127; --fg:#e8ecef; --muted:#98a3ad; --line:#2c353d;
+  --accent:#4cc3af; --accent-fg:#0c1b18; --accent-soft:#18332f;
+  --code-bg:#0c1014; --code-fg:#e8edf1; --out-bg:#202a2a; --out-fg:#e8ecef;
+  --ok:#5cd495; --ok-soft:#173326; --bad:#ff8c7f; --bad-soft:#3a1f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171b; --surface:#1a2127; --fg:#e8ecef; --muted:#98a3ad; --line:#2c353d;
+  --accent:#4cc3af; --accent-fg:#0c1b18; --accent-soft:#18332f;
+  --code-bg:#0c1014; --code-fg:#e8edf1; --out-bg:#202a2a; --out-fg:#e8ecef;
+  --ok:#5cd495; --ok-soft:#173326; --bad:#ff8c7f; --bad-soft:#3a1f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.75;margin:0;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:640px;margin-inline:auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 10px;border-bottom:1px solid var(--line)}
+.top h1{font-size:18px;margin:0;font-weight:700;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.top .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:500}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+nav.chips{display:flex;gap:8px;overflow-x:auto;padding-block:10px 2px;scrollbar-width:none}
+nav.chips::-webkit-scrollbar{display:none}
+nav.chips a{flex:0 0 auto;font-size:13px;color:var(--fg);text-decoration:none;border:1px solid var(--line);padding:4px 12px;border-radius:999px;background:var(--surface)}
+nav.chips a.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.intro{padding-block:20px 4px;color:var(--muted);font-size:15px}
+section.sec{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 16px;margin-top:16px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 96px)}
+section.sec h2{font-size:20px;margin:0 0 8px;line-height:1.4;text-wrap:balance}
+section.sec h2 small{display:block;font-size:12px;letter-spacing:.08em;color:var(--accent);font-weight:700;margin-bottom:2px}
+p{margin:8px 0}
+.lbl{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:14px 0 4px}
+pre{margin:0;padding:12px 14px;border-radius:8px;font-family:var(--font-code);font-size:14px;line-height:1.6;overflow-x:auto;white-space:pre}
+pre.code{background:var(--code-bg);color:var(--code-fg)}
+pre.out{background:var(--out-bg);color:var(--out-fg)}
+code.i{font-family:var(--font-code);font-size:.92em;background:var(--accent-soft);padding:1px 6px;border-radius:4px}
+.why{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin-top:12px}
+.quiz{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
+.q{margin-top:14px}
+.q .stem{font-weight:500}
+.q .stem pre{margin-top:8px}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opts button{font:inherit;font-family:var(--font-code);font-size:15px;text-align:left;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:44px;cursor:pointer}
+.opts button:focus-visible,.reset:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opts button.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opts button.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.opts button:disabled{cursor:default}
+.fb{margin-top:8px;font-size:15px;padding:8px 12px;border-radius:8px;background:var(--accent-soft)}
+.fb.bad{background:var(--bad-soft)}
+footer{margin-top:28px;display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:13px}
+.reset{font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.done-banner{margin-top:16px;padding:14px 16px;border-radius:10px;background:var(--ok-soft);color:var(--ok);font-weight:700}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+html{-webkit-text-size-adjust:100%}body{padding-top:env(safe-area-inset-top,0px)}</style>
+</head><body>
+
+<div class="wrap">
+  <header class="top">
+    <h1><span>Python 第 1 課</span><span class="count" id="count">0 / 0</span></h1>
+    <div class="bar"><i id="barfill"></i></div>
+    <nav class="chips" id="chips" aria-label="章節"></nav>
+  </header>
+  <p class="intro">從零開始,一節一節讀。每節最後有小測驗,答錯會告訴你為什麼,可以重答。目標:APCS 程式識讀(Python 題本)與實作。</p>
+  <main id="main"></main>
+  <div id="finish"></div>
+  <footer><span>進度只存在這支手機的瀏覽器。</span><button class="reset" id="reset" type="button">清除進度</button></footer>
+</div>
+
+<script>
+/* 課程資料:之後新增課只要往 LESSONS 加一個物件。code/out 為純文字。 */
+const LESSONS=[{
+ id:'L1',title:'第 1 課',
+ sections:[
+  {id:'s1',name:'print',h:'print:把東西顯示出來',
+   text:'<p><code class="i">print</code> 會把括號裡的東西顯示在螢幕上。<b>字串要用引號包起來</b>,數字不用。</p>',
+   code:'print("Hello")\nprint(123)\nprint(1 + 2)',out:'Hello\n123\n3',
+   why:'<code class="i">print(1 + 2)</code> 會先算出 3,再顯示 3。',
+   qs:[{id:'q1a',stem:'下面兩行分別輸出什麼?',code:'print("5" + "3")\nprint(5 + 3)',opts:['8 和 8','53 和 8','5 3 和 8','會出錯'],ans:1,exp:'引號裡的是字串,字串相加是「接起來」,所以 "5"+"3" 是 53;數字相加才是 8。'}]},
+  {id:'s2',name:'變數',h:'變數:有名字的盒子',
+   text:'<p>變數是<b>有名字的盒子</b>,把值放進去,以後用名字取出來。</p><p><code class="i">=</code> 不是「等於」,是<b>把右邊的值放進左邊的盒子</b>。</p>',
+   code:'age = 16\nname = "家愷"\nprint(age)\nprint(name)\n\na = 5\na = a + 1\nprint(a)',out:'16\n家愷\n6',
+   why:'<code class="i">a = a + 1</code>:先算右邊 a + 1 = 6,再把 6 放回 a。<br>另一個重點:放進去的是「當下的值」,之後不會自動跟著變。',
+   qs:[
+    {id:'q2a',stem:'這段會輸出什麼?',code:'x = 3\ny = x + 2\nx = 10\nprint(x, y)',opts:['10 12','10 5','3 5','10 10'],ans:1,exp:'y 是在 x 還是 3 的時候算出 5。之後 x 改成 10,y 不會自動重算,所以是 10 5。'},
+    {id:'q2b',stem:'這段會輸出什麼?',code:'a = 2\nb = 3\na = b\nb = a\nprint(a, b)',opts:['2 3','3 2','3 3','2 2'],ans:2,exp:'a = b 之後 a 變成 3;接著 b = a,拿到的是新的 a(3),所以兩個都是 3。要真的交換要寫 a, b = b, a。'}]},
+  {id:'s3',name:'型態',h:'資料型態',
+   text:'<p>每個值都有型態:整數 <code class="i">int</code>(5)、小數 <code class="i">float</code>(3.14)、字串 <code class="i">str</code>("abc")、真假 <code class="i">bool</code>(True / False)。</p><p>轉型:<code class="i">int("12")</code> 得到 12,<code class="i">str(12)</code> 得到 "12"。</p>',
+   code:'print(type(5))\nprint(int("12") + 3)\nprint("12" + "3")',out:"<class 'int'>\n15\n123",
+   why:'字串相加是接起來,數字相加才是算數。所以要算數,字串要先用 <code class="i">int()</code> 轉成整數。',
+   qs:[
+    {id:'q3a',stem:'<code class="i">int("7") + 3</code> 的結果?',opts:['10','73','"73"','會出錯'],ans:0,exp:'int("7") 先變成整數 7,再加 3 得 10。'},
+    {id:'q3b',stem:'<code class="i">"7" * 3</code> 的結果?',opts:['21','777','"21"','會出錯'],ans:1,exp:'字串乘整數代表重複,"7" * 3 是 "777"。'}]},
+  {id:'s4',name:'運算',h:'運算:+ - * / // % **',
+   text:'<p><code class="i">/</code> 一定得到小數:7 / 2 是 3.5。<br><code class="i">//</code> 只要商(整數除法):7 // 2 是 3。<br><code class="i">%</code> 取餘數:7 % 2 是 1。<br><code class="i">**</code> 次方:2 ** 3 是 8。</p><p>優先順序和數學一樣:先乘除後加減,括號最優先。</p>',
+   code:'print(7 / 2, 7 // 2, 7 % 2)\nprint(2 ** 3)\nprint(2 + 3 * 4, (2 + 3) * 4)',out:'3.5 3 1\n8\n14 20',
+   why:'<code class="i">%</code> 很常用:<br>偶數 <code class="i">n % 2 == 0</code>;3 的倍數 <code class="i">n % 3 == 0</code>;個位數 <code class="i">n % 10</code>;去掉個位 <code class="i">n // 10</code>。',
+   qs:[
+    {id:'q4a',stem:'<code class="i">17 % 5</code> 是多少?',opts:['3','2','3.4','12'],ans:1,exp:'17 = 5 × 3 + 2,餘數是 2。商是 17 // 5 = 3,17 / 5 = 3.4。'},
+    {id:'q4b',stem:'哪個算式可以得到 482 的十位數 8?',opts:['482 % 10','482 // 10','(482 // 10) % 10','482 / 10'],ans:2,exp:'482 // 10 = 48(去掉個位),再 % 10 取最後一位,得 8。'}]},
+  {id:'s5',name:'輸入',h:'輸入:讀進資料',
+   text:'<p><code class="i">input()</code> 讀進來<b>一定是字串</b>,要算數就得轉型。</p>',
+   code:'n = int(input())\nprint(n * 2)\n\na, b = map(int, input().split())\nprint(a + b)',out:'(輸入 5)→ 10\n(輸入 4 6)→ 10',
+   why:'第二種是一行讀兩個整數,中間用空白分隔。APCS 實作題常用這個寫法。<br>不轉型的話,"5" + "3" 會變成 "53"。',
+   qs:[
+    {id:'q5a',stem:'輸入 <code class="i">4 6</code>,程式輸出什麼?',code:'a, b = map(int, input().split())\nprint(a * b)',opts:['10','46','24','"4" "6"'],ans:2,exp:'a=4、b=6 都被轉成整數,4 × 6 = 24。'},
+    {id:'q5b',stem:'<code class="i">input()</code> 讀進來的資料是什麼型態?',opts:['int','float','str','看你輸入什麼'],ans:2,exp:'一律是 str(字串)。所以要算數必須用 int() 或 float() 轉型。'}]},
+  {id:'s6',name:'小程式',h:'串起來:完整小程式',
+   text:'<p>題目:輸入圓的半徑 r(整數),輸出面積(π 用 3.14)。</p><p>步驟:讀入 r → 算 3.14 * r * r → 輸出。</p>',
+   code:'r = int(input())\narea = 3.14 * r * r\nprint(area)',out:'(輸入 2)→ 12.56',
+   why:'任何程式都是這三步:<b>讀入 → 處理 → 輸出</b>。先想步驟,再寫程式。',
+   qs:[{id:'q6a',stem:'輸入兩個整數 a、b,要輸出平均數,最後一行該怎麼寫?',code:'a, b = map(int, input().split())\n# 這裡?',opts:['print(a + b / 2)','print((a + b) / 2)','print((a + b) // 2.0)','print(a + b) / 2'],ans:1,exp:'要先加再除,所以加法要用括號:(a + b) / 2。a + b / 2 會先算 b / 2。'}]}
+ ]}];
+
+const L=LESSONS[0];
+const KEY='pylearn-v1';
+let done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){done={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}}
+const allQs=L.sections.flatMap(s=>s.qs);
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+function pre(txt,cls){const p=el('pre',cls);p.textContent=txt;return p}
+
+function secDone(s){return s.qs.every(q=>done[q.id])}
+function update(){
+  const n=allQs.filter(q=>done[q.id]).length;
+  document.getElementById('count').textContent=n+' / '+allQs.length+' 題';
+  document.getElementById('barfill').style.width=(100*n/allQs.length)+'%';
+  document.querySelectorAll('#chips a').forEach((a,i)=>a.classList.toggle('done',secDone(L.sections[i])));
+  const f=document.getElementById('finish');
+  f.innerHTML='';
+  if(n===allQs.length){f.appendChild(el('div','done-banner','第 1 課全部答對。下一步:回 Discord 跟 Claude 說「第 1 課完成」,繼續第 2 課(if / for / list)。'))}
+}
+
+function renderQ(q,box){
+  const wrap=el('div','q');
+  wrap.appendChild(el('div','stem',q.stem));
+  if(q.code)wrap.lastChild.appendChild(pre(q.code,'code'));
+  const opts=el('div','opts');
+  const fb=el('div','fb');fb.hidden=true;fb.setAttribute('aria-live','polite');
+  const btns=q.opts.map((o,i)=>{
+    const b=el('button');b.type='button';b.textContent=o;
+    b.addEventListener('click',()=>{
+      if(done[q.id])return;
+      if(i===q.ans){
+        b.classList.add('ok');fb.className='fb';fb.textContent='答對了。'+q.exp;fb.hidden=false;
+        done[q.id]=1;save();btns.forEach(x=>x.disabled=true);update();
+      }else{
+        b.classList.add('bad');b.disabled=true;fb.className='fb bad';fb.textContent='再想想。這個選項不對,換一個。';fb.hidden=false;
+      }
+    });
+    opts.appendChild(b);return b});
+  wrap.append(opts,fb);
+  if(done[q.id]){btns[q.ans].classList.add('ok');btns.forEach(x=>x.disabled=true);fb.className='fb';fb.textContent='已答對。'+q.exp;fb.hidden=false}
+  box.appendChild(wrap);
+}
+
+function render(){
+  const main=document.getElementById('main'),chips=document.getElementById('chips');
+  main.innerHTML='';chips.innerHTML='';
+  L.sections.forEach((s,i)=>{
+    const a=el('a',null,(i+1)+' '+s.name);a.href='#'+s.id;
+    a.addEventListener('click',e=>{e.preventDefault();document.getElementById(s.id).scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})});
+    chips.appendChild(a);
+    const sec=el('section','sec');sec.id=s.id;
+    sec.appendChild(el('h2',null,'<small>第 '+(i+1)+' 節 / 共 '+L.sections.length+' 節</small>'+s.h));
+    sec.appendChild(el('div',null,s.text));
+    sec.appendChild(el('div','lbl','範例'));sec.appendChild(pre(s.code,'code'));
+    sec.appendChild(el('div','lbl','輸出'));sec.appendChild(pre(s.out,'out'));
+    sec.appendChild(el('div','why',s.why));
+    const quiz=el('div','quiz');quiz.appendChild(el('div','lbl','小測驗'));
+    s.qs.forEach(q=>renderQ(q,quiz));sec.appendChild(quiz);
+    main.appendChild(sec);
+  });
+  update();
+}
+document.getElementById('reset').addEventListener('click',()=>{done={};save();render();window.scrollTo(0,0)});
+render();
+</script>
+
+</body></html>
