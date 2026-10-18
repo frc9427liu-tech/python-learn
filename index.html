@@ -165,6 +165,50 @@ const LESSONS=[{
    code:'n = int(input())\ntotal = 0\nfor i in range(1, n + 1):\n    if i % 2 == 0:\n        total = total + i\nprint(total)',out:'(輸入 10)→ 30',
    why:'迴圈 + 判斷 + 累加,第 2 課三個重點合在一起。輸入 10:2+4+6+8+10 = 30。',
    qs:[{id:'r6a',stem:'要改成「1 到 n 中 3 的倍數的個數」,該改哪兩處?',code:'n = int(input())\ntotal = 0\nfor i in range(1, n + 1):\n    if i % 2 == 0:\n        total = total + i\nprint(total)',opts:['if 改成 i % 3 == 0,total + i 改成 total + 1','只改 range','if 改成 i // 3,total 不變','把 print 移到迴圈裡'],ans:0,exp:'條件換成 3 的倍數(i % 3 == 0),而「個數」是每次加 1,不是加 i。'}]}
+ ]},{
+ id:'L3',title:'第 3 課',
+ sections:[
+  {id:'u1',name:'函式',h:'函式:包起來重複用',
+   text:'<p><code class="i">def</code> 定義函式,<code class="i">return</code> 把結果交回來。函式要先定義、再呼叫。</p><p>好處:同一段邏輯寫一次,到處用;程式也比較好讀。</p>',
+   code:'def square(x):\n    return x * x\n\ndef add(a, b):\n    return a + b\n\nprint(square(4))\nprint(add(2, 3))',out:'16\n5',
+   why:'<code class="i">return</code> 一執行,函式就<b>立刻結束</b>並交回值。如果沒有寫 return,函式會交回 <code class="i">None</code>。',
+   qs:[
+    {id:'u1a',stem:'這段會輸出什麼?',code:'def f(x):\n    return x * 2 + 1\n\nprint(f(f(1)))',opts:['5','7','6','3'],ans:1,exp:'f(1) = 1*2+1 = 3;f(3) = 3*2+1 = 7。由內往外算。'},
+    {id:'u1b',stem:'這段會輸出什麼?',code:'def g(x):\n    x + 1\n\nprint(g(2))',opts:['3','2','None','會出錯'],ans:2,exp:'g 裡面算了 x + 1 卻沒有 return,所以函式交回 None。'}]},
+  {id:'u2',name:'字串',h:'字串:一排字元',
+   text:'<p>字串像 list 一樣有索引(從 0 開始),也可以切片 <code class="i">s[a:b]</code>(含 a、不含 b)。<code class="i">len(s)</code> 是長度,<code class="i">s.upper()</code> 轉大寫。</p><p>字串<b>不能直接修改</b>某一個字元。</p>',
+   code:'s = "python"\nprint(s[0], s[-1])\nprint(s[1:4])\nprint(len(s))\nprint(s.upper())',out:'p n\nyth\n6\nPYTHON',
+   why:'切片 <code class="i">s[1:4]</code> 取索引 1、2、3,和 <code class="i">range</code> 一樣「不含結尾」。',
+   qs:[
+    {id:'u2a',stem:'<code class="i">"banana"[1:4]</code> 是什麼?',opts:['"ban"','"ana"','"anan"','"bana"'],ans:1,exp:'索引 1、2、3 是 a、n、a,所以是 "ana"。'},
+    {id:'u2b',stem:'<code class="i">s = "abc"</code> 之後執行 <code class="i">s[0] = "x"</code> 會怎樣?',opts:['s 變成 "xbc"','s 變成 "x"','會出錯','沒事但 s 不變'],ans:2,exp:'字串不能修改。要換就得組一個新字串,例如 "x" + s[1:]。'}]},
+  {id:'u3',name:'走訪字串',h:'走訪字串:計數與反轉',
+   text:'<p><code class="i">for ch in s</code> 會一個字元一個字元取出來。<code class="i">x in s</code> 可以判斷某字元或片段有沒有出現。</p>',
+   code:'s = "banana"\nc = 0\nfor ch in s:\n    if ch == "a":\n        c = c + 1\nprint(c)\n\nr = ""\nfor ch in "abc":\n    r = ch + r\nprint(r)',out:'3\ncba',
+   why:'反轉的訣竅:每次把新字元接在<b>前面</b> (<code class="i">ch + r</code>),先進來的就被推到後面。',
+   qs:[
+    {id:'u3a',stem:'有幾個母音(a e i o u)?',code:'n = 0\nfor ch in "education":\n    if ch in "aeiou":\n        n = n + 1\nprint(n)',opts:['4','5','6','3'],ans:1,exp:'education 裡的 e、u、a、i、o 都是母音,共 5 個。'},
+    {id:'u3b',stem:'這段會輸出什麼?',code:'r = ""\nfor ch in "abc":\n    r = r + ch\nprint(r)',opts:['cba','abc','a','bca'],ans:1,exp:'這次是接在後面 (r + ch),順序不變,還是 abc。和上面反轉的差別就在 ch 放前面還是後面。'}]},
+  {id:'u4',name:'二維 list',h:'二維 list:表格',
+   text:'<p>list 裡面放 list,就是表格。<code class="i">g[r][c]</code> 是第 r 列、第 c 行(都從 0 開始)。<code class="i">len(g)</code> 是列數,<code class="i">len(g[0])</code> 是行數。</p><p>走訪整張表用<b>兩層 for</b>。</p>',
+   code:'g = [[1, 2, 3],\n     [4, 5, 6]]\nprint(g[1][2])\nprint(len(g), len(g[0]))\ntotal = 0\nfor row in g:\n    for x in row:\n        total = total + x\nprint(total)',out:'6\n2 3\n21',
+   why:'外層 for 一次取一整列,內層 for 再把這一列的每個數取出來。APCS 的矩陣題幾乎都是這個結構。',
+   qs:[
+    {id:'u4a',stem:'<code class="i">g = [[1, 2], [3, 4]]</code>,<code class="i">g[0][1] + g[1][0]</code> 是多少?',opts:['4','5','6','3'],ans:1,exp:'g[0][1] 是 2,g[1][0] 是 3,相加 5。先寫列、再寫行。'},
+    {id:'u4b',stem:'這段求的是什麼?結果多少?',code:'g = [[1,2,3],[4,5,6],[7,8,9]]\ns = 0\nfor i in range(3):\n    s = s + g[i][i]\nprint(s)',opts:['15','45','18','12'],ans:0,exp:'g[i][i] 是主對角線:1、5、9,加起來 15。'}]},
+  {id:'u5',name:'while',h:'while:條件成立就一直做',
+   text:'<p><code class="i">while 條件:</code> 只要條件還成立,縮排裡的事就一直重複。<b>裡面一定要有讓條件最後變 False 的動作</b>,否則會無限迴圈。</p><p>不知道要跑幾次(例如一直除到 0)時用 while;知道次數用 for。</p>',
+   code:'n = 1\nwhile n < 100:\n    n = n * 2\nprint(n)',out:'128',
+   why:'n 依序是 1、2、4、…、64、128。64 < 100 還會再乘一次,變 128 後不成立才停。',
+   qs:[
+    {id:'u5a',stem:'這段會輸出什麼?',code:'i = 0\nwhile i < 3:\n    i = i + 1\nprint(i)',opts:['2','3','4','0'],ans:1,exp:'i 變成 3 時 i < 3 不成立,迴圈結束,印 3。'},
+    {id:'u5b',stem:'這段在算什麼?輸出多少?',code:'n = 12345\nc = 0\nwhile n > 0:\n    n = n // 10\n    c = c + 1\nprint(c)',opts:['4','5','6','12345'],ans:1,exp:'每次去掉最後一位,共去 5 次才變 0。這是算「位數」。'}]},
+  {id:'u6',name:'小程式',h:'串起來:各位數字和',
+   text:'<p>題目:輸入整數 n,輸出它每一位數字的總和。例:482 → 4+8+2 = 14。</p><p>想法:<code class="i">n % 10</code> 取最後一位 → 加進總和 → <code class="i">n // 10</code> 去掉最後一位 → 重複到 n 變 0。</p>',
+   code:'n = int(input())\ns = 0\nwhile n > 0:\n    s = s + n % 10\n    n = n // 10\nprint(s)',out:'(輸入 482)→ 14',
+   why:'第 1 課的 % 和 //,加上 while。這是 APCS 很常見的「數字拆解」模式。',
+   qs:[
+    {id:'u6a',stem:'如果漏掉 <code class="i">n = n // 10</code> 這一行,會發生什麼?',opts:['輸出 0','輸出最後一位','無限迴圈','會出錯停止'],ans:2,exp:'n 永遠不變,n > 0 永遠成立,迴圈停不下來。寫 while 要先確認條件會變 False。'}]}
  ]}];
 
 let cur=0;try{cur=Math.min(LESSONS.length-1,Math.max(0,parseInt(localStorage.getItem('pylearn-cur')||'0')||0))}catch(e){}
