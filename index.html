@@ -209,6 +209,50 @@ const LESSONS=[{
    why:'第 1 課的 % 和 //,加上 while。這是 APCS 很常見的「數字拆解」模式。',
    qs:[
     {id:'u6a',stem:'如果漏掉 <code class="i">n = n // 10</code> 這一行,會發生什麼?',opts:['輸出 0','輸出最後一位','無限迴圈','會出錯停止'],ans:2,exp:'n 永遠不變,n > 0 永遠成立,迴圈停不下來。寫 while 要先確認條件會變 False。'}]}
+ ]},{
+ id:'L4',title:'第 4 課',
+ sections:[
+  {id:'v1',name:'list 方法',h:'list 方法:append 與 sort',
+   text:'<p><code class="i">a.append(x)</code> 把 x 加到 list 最後面。<code class="i">a.sort()</code> 把 a <b>本身</b>由小排到大;<code class="i">sorted(a)</code> 則是<b>回傳新的</b> list,a 不變。</p>',
+   code:'a = [3, 1, 2]\na.append(5)\na.sort()\nprint(a)\nprint(len(a), a[-1])',out:'[1, 2, 3, 5]\n4 5',
+   why:'<code class="i">a.sort()</code> 沒有回傳值(是 None),所以不要寫 <code class="i">a = a.sort()</code>。',
+   qs:[
+    {id:'v1a',stem:'這段會輸出什麼?',code:'a = [1, 2]\na.append(3)\na.append(4)\nprint(a[2])',opts:['2','3','4','1'],ans:1,exp:'a 變成 [1, 2, 3, 4],索引 2 是 3。'},
+    {id:'v1b',stem:'這段會輸出什麼?',code:'a = [5, 2, 9]\nb = sorted(a)\nprint(a[0], b[0])',opts:['5 2','2 2','5 5','2 5'],ans:0,exp:'sorted 回傳新 list b = [2, 5, 9],a 沒被改,a[0] 還是 5。'}]},
+  {id:'v2',name:'break/continue',h:'break 與 continue',
+   text:'<p><code class="i">break</code>:整個迴圈<b>立刻結束</b>。<code class="i">continue</code>:跳過<b>這一輪</b>剩下的部分,直接進下一輪。</p>',
+   code:'for i in range(1, 10):\n    if i % 3 == 0:\n        continue\n    if i > 7:\n        break\n    print(i)',out:'1\n2\n4\n5\n7',
+   why:'3、6 被 continue 跳過;i = 8 時 break,迴圈結束,所以 8、9 都沒印。',
+   qs:[
+    {id:'v2a',stem:'這段依序印出哪些數字?',code:'for i in range(5):\n    if i == 3:\n        break\n    print(i)',opts:['0 1 2','0 1 2 3','0 1 2 4','3'],ans:0,exp:'i = 3 時 break,3 之後都不跑,3 本身也沒印。'},
+    {id:'v2b',stem:'這段會輸出什麼?',code:'s = 0\nfor i in range(1, 6):\n    if i % 2 == 1:\n        continue\n    s = s + i\nprint(s)',opts:['6','9','15','12'],ans:0,exp:'奇數被跳過,只加 2 和 4,共 6。'}]},
+  {id:'v3',name:'質數',h:'函式實戰:判斷質數',
+   text:'<p>質數:大於 1,而且除了 1 和自己,沒有別的因數。做法:從 2 試到 n-1,只要有一個能整除就不是質數。</p>',
+   code:'def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, n):\n        if n % i == 0:\n            return False\n    return True\n\nprint(is_prime(7), is_prime(9))',out:'True False',
+   why:'<code class="i">return True</code> 要放在<b>迴圈外</b>:全部試完都沒人整除,才能確定是質數。',
+   qs:[
+    {id:'v3a',stem:'<code class="i">is_prime(2)</code> 的結果?',opts:['True','False','None','會出錯'],ans:0,exp:'range(2, 2) 是空的,迴圈一次都沒跑,直接到 return True。'},
+    {id:'v3b',stem:'如果把 <code class="i">return True</code> 縮排進 for 裡面(和 if 同一層),<code class="i">is_prime(9)</code> 會?',opts:['True','False','None','會出錯'],ans:0,exp:'i = 2 時 9 % 2 不是 0,馬上 return True,根本沒試到 3。return 太早是常見錯誤。'}]},
+  {id:'v4',name:'巢狀迴圈',h:'巢狀迴圈:數次數',
+   text:'<p>迴圈裡面再放迴圈。外層跑一次,內層就<b>完整跑一遍</b>。兩層各跑 a、b 次,內層主體共跑 a × b 次;內層範圍若依賴外層變數,就要一輪一輪加。</p>',
+   code:'c = 0\nfor i in range(1, 4):\n    for j in range(i, 4):\n        c = c + 1\nprint(c)',out:'6',
+   why:'i = 1 時 j 有 1、2、3(3 次);i = 2 有 2 次;i = 3 有 1 次。3 + 2 + 1 = 6。',
+   qs:[
+    {id:'v4a',stem:'<code class="i">c</code> 最後是多少?',code:'c = 0\nfor i in range(3):\n    for j in range(5):\n        c = c + 1\nprint(c)',opts:['8','15','5','3'],ans:1,exp:'3 × 5 = 15。'},
+    {id:'v4b',stem:'<code class="i">c</code> 最後是多少?',code:'c = 0\nfor i in range(1, 4):\n    for j in range(i + 1, 4):\n        c = c + 1\nprint(c)',opts:['3','6','4','2'],ans:0,exp:'i = 1:j 有 2、3(2 次);i = 2:j 有 3(1 次);i = 3:0 次。共 3 次,也就是「從 3 個東西選 2 個配對」。'}]},
+  {id:'v5',name:'dict',h:'dict:用名字找資料',
+   text:'<p><code class="i">d = {"a": 1}</code> 是「鍵 → 值」的對照表。<code class="i">d[k]</code> 取值,<code class="i">d[k] = v</code> 新增或修改,<code class="i">k in d</code> 判斷鍵存在嗎。取不存在的鍵會出錯。</p>',
+   code:'d = {}\nfor ch in "banana":\n    if ch in d:\n        d[ch] = d[ch] + 1\n    else:\n        d[ch] = 1\nprint(d["a"], d["n"])',out:'3 2',
+   why:'這是「計次數」的標準寫法:有了就加 1,沒有就先設成 1。',
+   qs:[
+    {id:'v5a',stem:'這段會輸出什麼?',code:'d = {"x": 1}\nd["y"] = 5\nd["x"] = d["x"] + 2\nprint(d["x"] + d["y"])',opts:['6','8','3','會出錯'],ans:1,exp:'x 變 3,y 是 5,相加 8。'},
+    {id:'v5b',stem:'這段會怎樣?',code:'d = {"a": 1}\nprint(d["b"])',opts:['印 0','印 None','會出錯(KeyError)','印空白'],ans:2,exp:'鍵 "b" 不存在,直接取會出錯。要先用 <code class="i">"b" in d</code> 檢查。'}]},
+  {id:'v6',name:'小程式',h:'串起來:數質數',
+   text:'<p>題目:輸入 n,輸出 1 到 n 之間有幾個質數。例:n = 10 → 2、3、5、7,共 4 個。</p><p>想法:用第 3 節的 <code class="i">is_prime</code>,配上 for 和計數。</p>',
+   code:'def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, n):\n        if n % i == 0:\n            return False\n    return True\n\nn = int(input())\nc = 0\nfor k in range(1, n + 1):\n    if is_prime(k):\n        c = c + 1\nprint(c)',out:'(輸入 10)→ 4',
+   why:'函式 + for + if + 計數,第 1~4 課全部用上了。',
+   qs:[
+    {id:'v6a',stem:'輸入 20,輸出多少?(2 3 5 7 11 13 17 19)',opts:['7','8','9','10'],ans:1,exp:'20 以內質數有 2、3、5、7、11、13、17、19,共 8 個。'}]}
  ]}];
 
 let cur=0;try{cur=Math.min(LESSONS.length-1,Math.max(0,parseInt(localStorage.getItem('pylearn-cur')||'0')||0))}catch(e){}
